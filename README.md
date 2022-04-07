@@ -20,5 +20,10 @@ npm run build
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## References
+
+- [Example](https://github.com/surmon-china/vue-video-player/blob/master/examples/01-video.vue)
+- [video pause](https://devsheet.com/code-snippet/videojs-check-if-video-is-playing/)
+- [Current time](https://stackoverflow.com/questions/9870552/how-to-get-current-playback-time-in-video-js)
+  - [set](https://stackoverflow.com/questions/47774170/how-to-start-video-at-a-given-time)

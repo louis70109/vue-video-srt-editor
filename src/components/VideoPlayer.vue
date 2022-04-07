@@ -6,7 +6,8 @@
       class="video-js"
       :options="playerOptions"
       controls
-      @play="onPlayerPlay(player)"
+      @play="onPlayerPlay()"
+      @pause="onPlayerPause()"
     >
       >
     </video>
@@ -21,12 +22,13 @@ export default {
   name: 'VideoPlayer',
   setup() {
     let player,
+      currentVideoTime = 0,
       playerOptions = {
         height: '360',
         // autoplay: true,
-        // muted: true,
-        // language: 'en',
-        playbackRates: [0.7, 1.0, 1.5, 2.0],
+        muted: true,
+        language: 'en',
+        playbackRates: [0.5, 1.0, 1.5, 2.0],
 
         sources: [
           {
@@ -35,9 +37,16 @@ export default {
             src: 'http://vjs.zencdn.net/v/oceans.mp4',
           },
         ],
-
-        // poster:
-        //   'https://surmon-china.github.io/vue-quill-editor/static/images/surmon-1.jpg',
+        userActions: {
+          hotkeys: function (event) {
+            if (!player.paused() && event.which === 27) {
+              this.pause();
+              currentVideoTime = event.timeStamp;
+            } else {
+              this.play();
+            }
+          },
+        },
       };
 
     onMounted(() => {
@@ -48,18 +57,21 @@ export default {
           console.log('onPlayerReady', this);
         }
       );
+      
     });
     onUnmounted(() => {
       if (player) {
         player.dispose();
       }
     });
-    function onPlayerPlay(player) {
-      console.log('player play!', player);
+    function onPlayerPlay() {
+      // console.log('player play!');
     }
-    // function onPlayerPause(player) {
-    //   // console.log('player pause!', player)
-    // }
+    function onPlayerPause() {
+      currentVideoTime = currentVideoTime / 1000;
+      console.log('Hi');
+      console.log(player.currentTime());
+    }
     // function onPlayerEnded(player) {
     //   // console.log('player ended!', player)
     // }
@@ -95,7 +107,8 @@ export default {
     return {
       player,
       onPlayerPlay,
-      //  onPlayerPause, onPlayerEnded, onPlayerLoadeddata, onPlayerWaiting,
+      onPlayerPause,
+      //  onPlayerEnded, onPlayerLoadeddata, onPlayerWaiting,
       // onPlayerPlaying, onPlayerTimeupdate, onPlayerCanplay, onPlayerCanplaythrough, playerStateChanged,
       playerReadied,
     };

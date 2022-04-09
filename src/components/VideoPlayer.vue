@@ -3,13 +3,14 @@
     <video
       id="player-element"
       ref="videoPlayer"
-      class="video-js"
+      class="video-js vjs-default-skin vjs-big-play-centered"
       :options="playerOptions"
       controls
       @play="onPlayerPlay()"
       @pause="onPlayerPause()"
     >
       >
+      <track kind='captions' src='https://dotsub.com/media/5d5f008c-b5d5-466f-bb83-2b3cfa997992/c/chi_hans/vtt' srclang='zh' label='Chinese' default />
     </video>
   </div>
 </template>
@@ -54,11 +55,11 @@ export default {
         'player-element',
         playerOptions,
         function onPlayerReady() {
-          console.log('onPlayerReady', this);
+          console.log('onPlayerReady');
         }
       );
       
-    });
+});
     onUnmounted(() => {
       if (player) {
         player.dispose();
@@ -72,6 +73,8 @@ export default {
       console.log('Hi');
       console.log(player.currentTime());
     }
+
+    
     // function onPlayerEnded(player) {
     //   // console.log('player ended!', player)
     // }

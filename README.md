@@ -27,3 +27,6 @@ npm run lint
 - [video pause](https://devsheet.com/code-snippet/videojs-check-if-video-is-playing/)
 - [Current time](https://stackoverflow.com/questions/9870552/how-to-get-current-playback-time-in-video-js)
   - [set](https://stackoverflow.com/questions/47774170/how-to-start-video-at-a-given-time)
+- Video centered: vjs-big-play-centered
+- Video js with WebVTT subtitle
+  - https://stackoverflow.com/questions/31284568/how-to-setup-subtitles-in-video-js

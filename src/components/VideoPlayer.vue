@@ -10,20 +10,43 @@
       @pause="onPlayerPause()"
     >
       >
-      <track kind='captions' src='https://dotsub.com/media/5d5f008c-b5d5-466f-bb83-2b3cfa997992/c/chi_hans/vtt' srclang='zh' label='Chinese' default />
+      <track
+        kind="captions"
+        src="https://storage.cloud.google.com/my-nijia-bucket-2/Sequence01.vtt"
+        srclang="zh"
+        label="Chinese"
+        default
+      />
     </video>
+    <ol v-for="(aud, index) in audios" :key="index">
+      <li>
+        <button :click="initDataOnStorage(aud.id, aud.name)">
+          {{ aud.bucket }}
+        </button>
+      </li>
+      <li>
+        <button>{{ aud.name }}</button>
+      </li>
+    </ol>
   </div>
 </template>
 
 <script>
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
-import { onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { getAudios } from '../utils/audio';
+import { getSubtitles } from '../utils/subtitle';
+import { getVideoLink, getSubtitleUrl } from '../utils/common';
 export default {
   name: 'VideoPlayer',
   setup() {
     let player,
       currentVideoTime = 0,
+      subtitleLink = ref(
+        localStorage.getItem('lastSubtitle') ||
+          'https://dotsub.com/media/5d5f008c-b5d5-466f-bb83-2b3cfa997992/c/chi_hans/vtt'
+      ),
       playerOptions = {
         height: '360',
         // autoplay: true,
@@ -34,8 +57,7 @@ export default {
         sources: [
           {
             type: 'video/mp4',
-            // mp4
-            src: 'http://vjs.zencdn.net/v/oceans.mp4',
+            src: localStorage.getItem('lastVideo') || 'http://vjs.zencdn.net/v/oceans.mp4',
           },
         ],
         userActions: {
@@ -48,9 +70,10 @@ export default {
             }
           },
         },
-      };
+      },
+      audios = ref([]);
 
-    onMounted(() => {
+    onMounted(async () => {
       player = videojs(
         'player-element',
         playerOptions,
@@ -58,8 +81,8 @@ export default {
           console.log('onPlayerReady');
         }
       );
-      
-});
+      audios.value = await getAudios();
+    });
     onUnmounted(() => {
       if (player) {
         player.dispose();
@@ -70,11 +93,18 @@ export default {
     }
     function onPlayerPause() {
       currentVideoTime = currentVideoTime / 1000;
-      console.log('Hi');
       console.log(player.currentTime());
     }
 
-    
+    async function initDataOnStorage(id, name) {
+      subtitleLink.value = await getSubtitleUrl(name);
+      let subtitles = JSON.stringify(await getSubtitles(id));
+      localStorage.setItem('video', await getVideoLink(name));
+      localStorage.setItem('subtitleLink', subtitleLink.value);
+      localStorage.setItem('subtitles', subtitles);
+      localStorage.setItem('lastSubtitles', subtitleLink.value);
+      localStorage.setItem('lastVideo', await getVideoLink(name));
+    }
     // function onPlayerEnded(player) {
     //   // console.log('player ended!', player)
     // }
@@ -109,8 +139,11 @@ export default {
     }
     return {
       player,
+      audios,
+      subtitleLink,
       onPlayerPlay,
       onPlayerPause,
+      initDataOnStorage,
       //  onPlayerEnded, onPlayerLoadeddata, onPlayerWaiting,
       // onPlayerPlaying, onPlayerTimeupdate, onPlayerCanplay, onPlayerCanplaythrough, playerStateChanged,
       playerReadied,

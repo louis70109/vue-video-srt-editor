@@ -1,7 +1,8 @@
 const API = process.env.VUE_APP_API;
 
-async function getSubtitles(vid) {
-  const res = await fetch(`${API}/subtitles/${vid}`);
+async function getSubtitles(vid, vtt='0') {
+  // vtt = 0 return JSON, 1 return WEBVTT string
+  const res = await fetch(`${API}/subtitles/${vid}?vtt=${vtt}`);
   return await res.json();
 }
 async function getSubtitle(vid, id) {

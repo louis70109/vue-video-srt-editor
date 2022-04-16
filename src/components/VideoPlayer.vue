@@ -9,15 +9,16 @@
       @play="onPlayerPlay()"
       @pause="onPlayerPause()"
     >
-      >
       <track
         kind="captions"
-        src="https://storage.cloud.google.com/my-nijia-bucket-2/Sequence01.vtt"
+        :src="getSubtitleLink()"
         srclang="zh"
         label="Chinese"
         default
       />
     </video>
+
+    {{ getSubtitleLink() }}
     <ol v-for="(aud, index) in audios" :key="index">
       <li>
         <button :click="initDataOnStorage(aud.id, aud.name)">
@@ -43,10 +44,6 @@ export default {
   setup() {
     let player,
       currentVideoTime = 0,
-      subtitleLink = ref(
-        localStorage.getItem('lastSubtitle') ||
-          'https://dotsub.com/media/5d5f008c-b5d5-466f-bb83-2b3cfa997992/c/chi_hans/vtt'
-      ),
       playerOptions = {
         height: '360',
         // autoplay: true,
@@ -57,7 +54,9 @@ export default {
         sources: [
           {
             type: 'video/mp4',
-            src: localStorage.getItem('lastVideo') || 'http://vjs.zencdn.net/v/oceans.mp4',
+            src:
+              localStorage.getItem('lastVideo') ||
+              'http://vjs.zencdn.net/v/oceans.mp4',
           },
         ],
         userActions: {
@@ -89,21 +88,38 @@ export default {
       }
     });
     function onPlayerPlay() {
-      // console.log('player play!');
+      console.log('player play!');
     }
+    
     function onPlayerPause() {
       currentVideoTime = currentVideoTime / 1000;
       console.log(player.currentTime());
     }
 
     async function initDataOnStorage(id, name) {
-      subtitleLink.value = await getSubtitleUrl(name);
-      let subtitles = JSON.stringify(await getSubtitles(id));
+      const subtitleLink = await getSubtitleUrl(name);
+
       localStorage.setItem('video', await getVideoLink(name));
-      localStorage.setItem('subtitleLink', subtitleLink.value);
-      localStorage.setItem('subtitles', subtitles);
-      localStorage.setItem('lastSubtitles', subtitleLink.value);
+      localStorage.setItem('subtitleLink', subtitleLink);
+      /*
+      subtitle: JSON vtt
+      subtitles: string vtt
+      */
+      localStorage.setItem(
+        'subtitles',
+        JSON.stringify(await getSubtitles(id, '1'))
+      );
+      localStorage.setItem('subtitle', JSON.stringify(await getSubtitles(id)));
+      localStorage.setItem('lastSubtitles', subtitleLink);
       localStorage.setItem('lastVideo', await getVideoLink(name));
+    }
+
+    function getSubtitleLink() {
+      const vttText = eval(localStorage.getItem('subtitles'));
+
+      const vttBlob = new Blob([vttText], { type: 'text/vtt' });
+      const blobURL = URL.createObjectURL(vttBlob);
+      return blobURL;
     }
     // function onPlayerEnded(player) {
     //   // console.log('player ended!', player)
@@ -140,7 +156,7 @@ export default {
     return {
       player,
       audios,
-      subtitleLink,
+      getSubtitleLink,
       onPlayerPlay,
       onPlayerPause,
       initDataOnStorage,

@@ -1,5 +1,4 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
   <VideoPlayer msg="Welcome to Your Vue.js App"/>
 </template>
 

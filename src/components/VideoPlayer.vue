@@ -38,12 +38,17 @@ import 'video.js/dist/video-js.css';
 import { ref, onMounted, onUnmounted } from 'vue';
 import { getAudios } from '../utils/audio';
 import { getSubtitles } from '../utils/subtitle';
-import { getVideoLink, getSubtitleUrl } from '../utils/common';
+import {
+  getVideoLink,
+  getSubtitleUrl,
+  compareTimePeriod,
+} from '../utils/common';
 export default {
   name: 'VideoPlayer',
   setup() {
     let player,
-      currentVideoTime = 0,
+      // currentVideoTime = 0,
+      // videoSetting = ref({}),
       playerOptions = {
         height: '360',
         // autoplay: true,
@@ -63,7 +68,7 @@ export default {
           hotkeys: function (event) {
             if (!player.paused() && event.which === 27) {
               this.pause();
-              currentVideoTime = event.timeStamp;
+              // currentVideoTime = event.timeStamp;
             } else {
               this.play();
             }
@@ -90,10 +95,24 @@ export default {
     function onPlayerPlay() {
       console.log('player play!');
     }
-    
+
     function onPlayerPause() {
-      currentVideoTime = currentVideoTime / 1000;
-      console.log(player.currentTime());
+      console.log('paused');
+      // find start and end time period
+
+      const subtitle = JSON.parse(localStorage.getItem('subtitle'));
+      for (let i = 0; i < subtitle.length; i++) {
+        const s = subtitle[i];
+        const result = compareTimePeriod(
+          player.currentTime(),
+          s['start_time'],
+          s['end_time']
+        );
+        if (result) {
+          localStorage.setItem('currentSubtitleObject', JSON.stringify(s));
+          break;
+        }
+      }
     }
 
     async function initDataOnStorage(id, name) {

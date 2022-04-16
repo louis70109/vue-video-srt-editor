@@ -30,3 +30,4 @@ npm run lint
 - Video centered: vjs-big-play-centered
 - Video js with WebVTT subtitle
   - https://stackoverflow.com/questions/31284568/how-to-setup-subtitles-in-video-js
+- [Blob create URL reference](https://github.com/videojs/video.js/issues/5923)

@@ -113,6 +113,7 @@ export default {
           break;
         }
       }
+      localStorage.setItem('lastVideoPlayTime', player.currentTime().toString())
     }
 
     async function initDataOnStorage(id, name) {

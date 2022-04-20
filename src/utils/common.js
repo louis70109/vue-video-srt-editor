@@ -35,7 +35,7 @@ function secondToHHMMSS(s) {
   // 0:00:01:123
   return new Date(s * 1000).toISOString().substr(11, 12);
 }
-function getTime(time) {
+export function getTime(time) {
   return new Date(
     2020,
     1,

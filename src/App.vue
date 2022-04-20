@@ -1,14 +1,16 @@
 <template>
   <VideoPlayer msg="Welcome to Your Vue.js App"/>
+  <Editor></Editor>
 </template>
 
 <script>
 import VideoPlayer from './components/VideoPlayer.vue'
-
+import Editor from './components/Editor.vue'
 export default {
   name: 'App',
   components: {
-    VideoPlayer
+    VideoPlayer,
+    Editor
   }
 }
 </script>

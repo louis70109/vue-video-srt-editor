@@ -31,3 +31,5 @@ npm run lint
 - Video js with WebVTT subtitle
   - https://stackoverflow.com/questions/31284568/how-to-setup-subtitles-in-video-js
 - [Blob create URL reference](https://github.com/videojs/video.js/issues/5923)
+- [add v-bind value prefix](https://stackoverflow.com/questions/43053061/vue-js-value-bind-with-prefix-and-suffix)
+  - `v-bind:value="'rgb(' + themestopnavback + ')'"`

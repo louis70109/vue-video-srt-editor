@@ -40,42 +40,41 @@ export default {
         editorNext = null;
 
       // Find next element HTML
-      for (
-        let idx = editorIdIndex + 1;
-        idx < editorEdit.value.length;
-        idx++
-      ) {
+      for (let idx = editorIdIndex + 1; idx < editorEdit.value.length; idx++) {
         editorNext = document.getElementById(`editor-${(editorIdIndex += 1)}`);
         if (editorNext !== null) break;
       }
-
       // need to judge last element
       if (el.which == 9) {
         // merge to next editor input column
+        
         editorNext.value = editor.value + editorNext.value;
         console.log(editorNext.value);
         editor.parentNode.remove();
+
         console.log(`#editor-${editorIdIndex} upup`);
       }
     }
+
     function enterKeyPress(el, editorIdIndex) {
       let editor = document.getElementById(`editor-${editorIdIndex}`);
       let parent = editor.parentNode;
+      // maybe add some CSS here
       const wrapper = document.createElement('div');
 
       // set the wrapper as child (instead of the element)
       parent.replaceChild(wrapper, editor);
       // set element as child of wrapper
       wrapper.appendChild(editor);
-
-      console.log(editorObject);
     }
     onMounted(async () => {
       editorEdit.value = editorObject.description.split(', ');
       editorRestore.value = editorEdit.value;
       // schedule sync to backend
       setInterval(() => {
-        playTime.value = Number(localStorage.getItem('lastVideoPlayTime'));
+        const latVideoTime = Number(localStorage.getItem('lastVideoPlayTime'));
+        if (latVideoTime === null) playTime.value = 0;
+        else playTime.value = latVideoTime;
       }, 2000);
 
       // add event listener on editor input column

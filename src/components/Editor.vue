@@ -37,20 +37,30 @@ export default {
 
     function tabKeyPressMergeColumn(el, editorIdIndex) {
       let editor = document.getElementById(`editor-${editorIdIndex}`),
-        editorNext = null;
+        editorNext = null,
+        editorNextIndex = 0;
+      const editorIdIndexOrigin = editorIdIndex;
 
       // Find next element HTML
       for (let idx = editorIdIndex + 1; idx < editorEdit.value.length; idx++) {
         editorNext = document.getElementById(`editor-${(editorIdIndex += 1)}`);
-        if (editorNext !== null) break;
+        editorNextIndex = idx;
+        if (editorNext.value !== null) break;
       }
       // need to judge last element
       if (el.which == 9) {
         // merge to next editor input column
-        
+
         editorNext.value = editor.value + editorNext.value;
-        console.log(editorNext.value);
+
+        // console.log(editorIdIndex);
         editor.parentNode.remove();
+
+        // console.log(tmpEditor[editorIdIndexOrigin]);
+        // console.log(tmpEditor[editorNextIndex]);
+        editorRestore.value[editorNextIndex] =
+          editorRestore.value[editorIdIndexOrigin] + editorRestore.value[editorNextIndex];
+        editorRestore.value[editorIdIndexOrigin] = '~~';
 
         console.log(`#editor-${editorIdIndex} upup`);
       }
@@ -66,10 +76,12 @@ export default {
       parent.replaceChild(wrapper, editor);
       // set element as child of wrapper
       wrapper.appendChild(editor);
+
+      console.log(editor.value);
     }
     onMounted(async () => {
       editorEdit.value = editorObject.description.split(', ');
-      editorRestore.value = editorEdit.value;
+      editorRestore.value = editorObject.description.split(', ');
       // schedule sync to backend
       setInterval(() => {
         const latVideoTime = Number(localStorage.getItem('lastVideoPlayTime'));
@@ -86,13 +98,13 @@ export default {
           document
             .getElementById(`editor-${idx}`)
             .addEventListener('keydown', (el) => {
-              tabKeyPressMergeColumn(el, idx);
+              if (el.which == 9) tabKeyPressMergeColumn(el, idx);
             });
           //  Enter click event
           document
             .getElementById(`editor-${idx}`)
             .addEventListener('keydown', (el) => {
-              enterKeyPress(el, idx);
+              if (el.which == 13) enterKeyPress(el, idx);
             });
           clearInterval(editorEventSetter);
         }

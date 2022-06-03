@@ -7,6 +7,7 @@
     <div>Subtitle start_time: {{ editorObject['start_time'] }}</div>
     <div>Subtitle end_time: {{ editorObject['end_time'] }}</div>
     <button @click="inputHtmlValueToSubtitleText">Sync</button>
+    <button @click="syncToAPI">sync to API</button>
     <br />
     <div>
       <span
@@ -33,7 +34,6 @@ export default {
       playTime = ref(0),
       editorEdit = ref([]),
       editorRestore = ref([]);
-    // description = ref(editorObject.value.description);
 
     function tabKeyPressMergeColumn(el, editorIdIndex) {
       let editor = document.getElementById(`editor-${editorIdIndex}`),
@@ -41,33 +41,26 @@ export default {
         editorNextIndex = 0;
       const editorIdIndexOrigin = editorIdIndex;
 
-      // Find next element HTML
+      // 找到當前 tab 的下一個 element HTML
       for (let idx = editorIdIndex + 1; idx < editorEdit.value.length; idx++) {
         editorNext = document.getElementById(`editor-${(editorIdIndex += 1)}`);
         editorNextIndex = idx;
         if (editorNext.value !== null) break;
       }
-      // need to judge last element
-      if (el.which == 9) {
-        // merge to next editor input column
+      // 更改 UI 上的數值
+      editorNext.value = editor.value + editorNext.value;
+      editor.parentNode.remove();
 
-        editorNext.value = editor.value + editorNext.value;
-
-        // console.log(editorIdIndex);
-        editor.parentNode.remove();
-
-        // console.log(tmpEditor[editorIdIndexOrigin]);
-        // console.log(tmpEditor[editorNextIndex]);
-        editorRestore.value[editorNextIndex] =
-          editorRestore.value[editorIdIndexOrigin] + editorRestore.value[editorNextIndex];
-        editorRestore.value[editorIdIndexOrigin] = '~~';
-
-        console.log(`#editor-${editorIdIndex} upup`);
-      }
+      // 按下 tab 後修改回傳後端需要的對應陣列
+      editorRestore.value[editorNextIndex] =
+        editorRestore.value[editorIdIndexOrigin] +
+        editorRestore.value[editorNextIndex];
+      editorRestore.value[editorIdIndexOrigin] = '~~';
     }
 
     function enterKeyPress(el, editorIdIndex) {
       let editor = document.getElementById(`editor-${editorIdIndex}`);
+      console.log(subtitleModifyLength());
       let parent = editor.parentNode;
       // maybe add some CSS here
       const wrapper = document.createElement('div');
@@ -114,13 +107,71 @@ export default {
     onUnmounted(() => {});
 
     // function compare(currentString){}
-    // function syncToAPI(){}
+
+    function makeArraySequence(anyArray) {
+      return anyArray.sort((a, b) => {
+        return a.id - b.id;
+      });
+    }
+    function syncToAPI() {
+      // current -> editorObject
+      // original -> subtitle
+      let subtitles = JSON.parse(localStorage.getItem('subtitle'));
+      // modify object -> editorRestore
+
+      // arrange list to sequence
+      let subtitlesArrange = makeArraySequence(subtitles),
+        subTitleResultArrange = makeArraySequence(editorRestore.value);
+
+      // const current = JSON.parse(localStorage.getItem('currentSubtitleObject'));
+      // find current in original
+      for (let i = 0; i < subtitlesArrange.length; i++) {
+        const current = subtitlesArrange[i];
+        if (current.id === editorObject.id) {
+          // update next to last dict id
+          for (let j = i + 1; j < subtitlesArrange.length; j++) {
+            //
+            subtitlesArrange[j].id =
+              subtitlesArrange[j].id + subTitleResultArrange.length;
+            /* start time
+            endtime
+            description
+
+            */
+          }
+          // insert
+          subtitlesArrange.splice(i, 0, ...subTitleResultArrange);
+          makeArraySequence(subtitlesArrange);
+
+          break;
+        }
+      }
+
+      // input modify to original
+      // update current +1 place to modify last DOM +1 place
+    }
+
+    // function subtitleModifyResult() {
+    //   console.log(editorRestore.value);
+    //   const uniqueArray = editorRestore.value.filter(function (item) {
+    //     return item !== '~~';
+    //   });
+    //   const length = uniqueArray.length;
+    //   const currentSubtitleObject = JSON.parse(localStorage.getItem('currentSubtitleObject'));
+    //   const startTime = currentSubtitleObject.start_time,
+    //     endTime = currentSubtitleObject.end_time;
+      
+    //   Date.parse()
+    //   timeStringToTimeObject()
+
+    // }
     return {
       editorObject,
       editorEdit,
       editorRestore,
       playTime,
       inputHtmlValueToSubtitleText,
+      syncToAPI,
     };
   },
 };

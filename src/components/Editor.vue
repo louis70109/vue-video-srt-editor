@@ -3,9 +3,9 @@
     <button>Dump VTT</button>
 
     <h2>Editor</h2>
-    <div>Current Time: {{ playTime }}</div>
-    <div>Subtitle start_time: {{ editorObject['start_time'] }}</div>
-    <div>Subtitle end_time: {{ editorObject['end_time'] }}</div>
+    <div>最後觀看時間: {{ playTime }}</div>
+    <div>字幕 start_time: {{ editorObject['start_time'] }}</div>
+    <div>字幕 end_time: {{ editorObject['end_time'] }}</div>
     <button @click="inputHtmlValueToSubtitleText">Sync</button>
     <button @click="syncToAPI">sync to API</button>
     <br />
@@ -60,7 +60,9 @@ export default {
 
     function enterKeyPress(el, editorIdIndex) {
       let editor = document.getElementById(`editor-${editorIdIndex}`);
-      console.log(subtitleModifyLength());
+
+      // list ->
+
       let parent = editor.parentNode;
       // maybe add some CSS here
       const wrapper = document.createElement('div');
@@ -122,17 +124,43 @@ export default {
       // arrange list to sequence
       let subtitlesArrange = makeArraySequence(subtitles),
         subTitleResultArrange = makeArraySequence(editorRestore.value);
-
-      // const current = JSON.parse(localStorage.getItem('currentSubtitleObject'));
+      console.log('原本' + JSON.stringify(subtitlesArrange));
+      console.log('改過的' + subTitleResultArrange);
+      console.log(typeof subTitleResultArrange);
+      console.log('ddd ' + JSON.stringify(editorObject));
+      // const current = JSON.parse(localStorage.getItem('currentSubtitlesubTitleResultArrange'));
       // find current in original
       for (let i = 0; i < subtitlesArrange.length; i++) {
         const current = subtitlesArrange[i];
         if (current.id === editorObject.id) {
           // update next to last dict id
-          for (let j = i + 1; j < subtitlesArrange.length; j++) {
+          /* eslint-disable */
+          let descriptionModifyResultString = '', count = 0;
+          for (let j = 0; j < subTitleResultArrange.length; j++) {
             //
-            subtitlesArrange[j].id =
-              subtitlesArrange[j].id + subTitleResultArrange.length;
+            if (
+              subTitleResultArrange[j + 1] !== '~' ||
+              j < subTitleResultArrange.length
+            )
+              descriptionModifyResultString = subTitleResultArrange[j] + ',';
+            else {
+              subtitlesArrange[j].id =
+                subtitlesArrange[j].id + count;
+                // cut time condition
+                // sync to API function
+                /*
+                {
+                  id: subtitlesArrange[j].id
+                  description: descriptionModifyResultString
+                  start_time: a time
+                  end_time: b time
+                  vid: original vid
+                }
+                */
+              descriptionModifyResultString = '';
+              count += 1
+              
+            }
             /* start time
             endtime
             description
@@ -142,7 +170,6 @@ export default {
           // insert
           subtitlesArrange.splice(i, 0, ...subTitleResultArrange);
           makeArraySequence(subtitlesArrange);
-
           break;
         }
       }
@@ -160,7 +187,7 @@ export default {
     //   const currentSubtitleObject = JSON.parse(localStorage.getItem('currentSubtitleObject'));
     //   const startTime = currentSubtitleObject.start_time,
     //     endTime = currentSubtitleObject.end_time;
-      
+
     //   Date.parse()
     //   timeStringToTimeObject()
 

@@ -6,10 +6,12 @@
     <div>最後觀看時間: {{ playTime }}</div>
     <div>字幕 start_time: {{ editorObject['start_time'] }}</div>
     <div>字幕 end_time: {{ editorObject['end_time'] }}</div>
+    <a :href="getSubtitleLink()" download="my_subtitle.vtt"><button>dump</button></a>
     <button @click="inputHtmlValueToSubtitleText">Sync</button>
     <button @click="syncToAPI">sync to API</button>
     <br />
     <div>
+    <textarea name="subtitleText" id="subtitleTextarea" cols="300" rows="100"></textarea>
       <span
         class="editor-list"
         v-for="(editor, index) in editorEdit"
@@ -24,7 +26,7 @@
 
 <script>
 import { onMounted, onUnmounted, ref } from 'vue';
-import { inputHtmlValueToSubtitleText } from '../utils/editor';
+import {getSubtitleLink,inputHtmlValueToSubtitleText } from '../utils/index';
 export default {
   name: 'Editor',
   setup() {
@@ -135,7 +137,8 @@ export default {
         if (current.id === editorObject.id) {
           // update next to last dict id
           /* eslint-disable */
-          let descriptionModifyResultString = '', count = 0;
+          let descriptionModifyResultString = '',
+            count = 0;
           for (let j = 0; j < subTitleResultArrange.length; j++) {
             //
             if (
@@ -144,11 +147,10 @@ export default {
             )
               descriptionModifyResultString = subTitleResultArrange[j] + ',';
             else {
-              subtitlesArrange[j].id =
-                subtitlesArrange[j].id + count;
-                // cut time condition
-                // sync to API function
-                /*
+              subtitlesArrange[j].id = subtitlesArrange[j].id + count;
+              // cut time condition
+              // sync to API function
+              /*
                 {
                   id: subtitlesArrange[j].id
                   description: descriptionModifyResultString
@@ -158,8 +160,7 @@ export default {
                 }
                 */
               descriptionModifyResultString = '';
-              count += 1
-              
+              count += 1;
             }
             /* start time
             endtime
@@ -192,6 +193,8 @@ export default {
     //   timeStringToTimeObject()
 
     // }
+
+    
     return {
       editorObject,
       editorEdit,
@@ -199,6 +202,7 @@ export default {
       playTime,
       inputHtmlValueToSubtitleText,
       syncToAPI,
+      getSubtitleLink,
     };
   },
 };

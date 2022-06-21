@@ -36,13 +36,13 @@
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import { ref, onMounted, onUnmounted } from 'vue';
-import { getAudios } from '../utils/audio';
-import { getSubtitles } from '../utils/subtitle';
 import {
   getVideoLink,
   getSubtitleUrl,
   compareTimePeriod,
-} from '../utils/common';
+  getSubtitles,
+  getAudios,
+} from '../utils/index';
 export default {
   name: 'VideoPlayer',
   setup() {
@@ -113,7 +113,10 @@ export default {
           break;
         }
       }
-      localStorage.setItem('lastVideoPlayTime', player.currentTime().toString())
+      localStorage.setItem(
+        'lastVideoPlayTime',
+        player.currentTime().toString()
+      );
     }
 
     async function initDataOnStorage(id, name) {

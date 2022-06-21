@@ -45,3 +45,4 @@ npm run lint
 - [Blob create URL reference](https://github.com/videojs/video.js/issues/5923)
 - [add v-bind value prefix](https://stackoverflow.com/questions/43053061/vue-js-value-bind-with-prefix-and-suffix)
   - `v-bind:value="'rgb(' + themestopnavback + ')'"`
+- [Download JS](https://stackoverflow.com/questions/11620698/how-to-trigger-a-file-download-when-clicking-an-html-button-or-javascript)
